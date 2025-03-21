@@ -17,7 +17,7 @@ router = APIRouter()
     status_code = status.HTTP_200_OK
 )
 def health_check() -> schemas.HealthCheckResponse | JSONResponse:
-    return schemas.HealthCheckResponse(status=200, msg="Server is healthy!")
+    return schemas.HealthCheckResponse(status_code=200, msg="Server is healthy!")
 
 @router.post(
     "/shorten", 
