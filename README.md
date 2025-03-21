@@ -28,13 +28,19 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 ```
 
-3. Install dependencies:
+3. Create `database.db` from SQLAchemy declarative base
+
+```
+python -m utils.create_db
+```
+
+4. Install dependencies:
 
 ```
 pip install -r requirements.txt
 ```
 
-4. Start the server:
+5. Start the server:
 
 ```
 uvicorn main:app --reload
