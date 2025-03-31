@@ -65,3 +65,12 @@ class UserForm(BaseModel):
     password: str
     is_active: bool = True
     is_admin: bool = False
+
+class OAuth2PasswordRequestForm(BaseModel):
+    username: str
+    password: str
+
+class OAuth2BaseResponse(BaseModel):
+    token_type: str
+    access_token: str
+    expire_time: int 

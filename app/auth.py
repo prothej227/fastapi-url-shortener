@@ -4,14 +4,9 @@ from app.repositories.user_repository import UserRepository
 from sqlalchemy.orm import Session
 from app.schemas import UserForm, UserBase
 from app.database import get_db
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta
-from app.services.auth import create_access_token, get_settings, oauth2_scheme
-from pydantic import BaseModel
-
-class OAuth2PasswordRequestForm(BaseModel):
-    username: str
-    password: str
+from app.services.auth import create_access_token, get_settings
+from app.schemas import OAuth2BaseResponse
 
 auth = APIRouter(prefix="/auth")
 
@@ -53,9 +48,13 @@ def delete_user(username: str, db: Session = Depends(get_db)):
 
 @auth.post(
     "/token",
-    response_model=dict
+    response_model=OAuth2BaseResponse
 )
-def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):
+def login(
+    username: str = Form(...), 
+    password: str = Form(...), 
+    db: Session = Depends(get_db)
+):
     repo = UserRepository(db)
     user = repo.authenticate_user(username, password)
 
@@ -71,4 +70,8 @@ def login(username: str = Form(...), password: str = Form(...), db: Session = De
         data={"sub": user.username}, expires_delta=access_token_expires
     )
 
-    return {"access_token": access_token, "token_type": "bearer", "expire_time": access_token_expires.total_seconds()}
+    return {
+        "token_type": "bearer", 
+        "access_token": access_token, 
+        "expire_time": access_token_expires.total_seconds()
+    }
