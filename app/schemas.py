@@ -1,9 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from uuid import UUID
 from datetime import datetime
 from typing import Optional
-
 
 class ShortenRequestBody(BaseModel):
     original_url: str
@@ -34,6 +33,7 @@ class UserForm(BaseModel):
     username: str
     password: str
     email: str
+    is_admin: bool
 
 class UrlAnalyticsView(BaseModel):
     id: UUID
@@ -48,3 +48,20 @@ class UrlAnalyticsView(BaseModel):
 class HealthCheckResponse(BaseModel):
     status_code: int
     msg: str
+
+class UserBase(BaseModel):
+    id: UUID
+    username: str
+    email: EmailStr
+    is_active: bool
+    is_admin: bool
+
+    class Config:
+        orm_mode = True
+
+class UserForm(BaseModel):
+    username: str
+    email: str
+    password: str
+    is_active: bool = True
+    is_admin: bool = False
