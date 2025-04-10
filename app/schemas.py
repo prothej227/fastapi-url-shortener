@@ -37,7 +37,6 @@ class UserForm(BaseModel):
 
 class UrlAnalyticsView(BaseModel):
     id: UUID
-    url_id: UUID 
     accessed_at: datetime
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
@@ -74,3 +73,7 @@ class OAuth2BaseResponse(BaseModel):
     token_type: str
     access_token: str
     expire_time: int 
+
+class TokenData(BaseModel):
+    current_active_uuid: UUID | None = None
+    current_active_username: str | None = None

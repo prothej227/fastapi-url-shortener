@@ -77,6 +77,7 @@ class UserRepository:
         if user:
             return user
         return None
+
     
     @staticmethod
     def _hash_password(original_password: str) -> str:

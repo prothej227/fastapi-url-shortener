@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
-from app.models import Url, UrlAnalytics
+from sqlalchemy.exc import IntegrityError
+from app.models import Url, UrlAnalytics, User
+from typing import Optional, List
+from sqlalchemy.dialects.postgresql import UUID
 
 class UrlRepository:
     """Repository for URL persistence layer"""
@@ -7,12 +10,17 @@ class UrlRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def save_short_url(self, original_url: str, short_code: str):
+    def save_short_url(self, original_url: str, short_code: str, user: User) -> bool:
         """Save the shortened URL"""
-        new_url = Url(original_url=original_url, short_code=short_code)
-        self.db.add(new_url)
-        self.db.commit()
-
+        new_url = Url(original_url=original_url, short_code=short_code, user=user)
+        try:
+            self.db.add(new_url)
+            self.db.commit()
+        except IntegrityError:
+            self.db.rollback()
+            return False
+        return True
+            
     def get_original_url(self, short_code: str) -> str:
         """Retrieve the original URL"""
         url_entry = self.db.query(Url).filter_by(short_code=short_code).first()
@@ -41,5 +49,9 @@ class UrlRepository:
         """ Get URL record by short code """
         return self.db.query(Url).filter_by(short_code=short_code).first()
     
-    def get_url_analytics(self, short_code: str) -> UrlAnalytics | None:
-        return self.db.query(UrlAnalytics).filter_by(short_code=short_code)
+    def get_urls_by_user(self, user_uuid: UUID) -> Optional[List[Url]]:
+        urls = self.db.query(Url).filter_by(user_uuid).all()
+        return urls if urls else None
+    
+    def get_url_analytics(self, short_code: str) -> Optional[List[UrlAnalytics]]:
+        return self.db.query(UrlAnalytics).filter_by(short_code=short_code).all()

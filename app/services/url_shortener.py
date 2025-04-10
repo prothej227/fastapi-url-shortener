@@ -2,7 +2,8 @@ from app.repositories.url_repository import UrlRepository
 from app.services.shortening import ShorteningStrategy
 from app.services.custom import CustomAliasStrategy
 from app.services.keyword import KeywordBasedStrategy
-from app.models import Url
+from app.models import Url, User
+from typing import Optional
 
 class UrlShortener:
     def __init__(self, repo: UrlRepository, strategy: ShorteningStrategy, code_length: int = 6):
@@ -10,7 +11,7 @@ class UrlShortener:
         self.strategy = strategy
         self.code_length = code_length
         
-    def shorten_url(self, original_url: str, custom_code: str = None) -> str:
+    def shorten_url(self, original_url: str, user: User, custom_code: str = None) -> Optional[str]:
         """  Returns the shortened url """
         if isinstance(self.strategy, CustomAliasStrategy) and custom_code:
             short_code = self.strategy.shorten_url(custom_code)
@@ -22,7 +23,9 @@ class UrlShortener:
         while not self.repo.is_unique_short_code(short_code):
             short_code = self.strategy.shorten_url(original_url, custom_code)
         # Persistence
-        self.repo.save_short_url(original_url, short_code)
+        exec_persistence = self.repo.save_short_url(original_url, short_code, user)
+        if not exec_persistence:
+            return None
         return short_code
 
     def expand_url(self, short_code: str) -> str:

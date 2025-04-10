@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.responses import JSONResponse
-from app.repositories.user_repository import UserRepository
 from sqlalchemy.orm import Session
+from datetime import timedelta
+from app.repositories.user_repository import UserRepository
 from app.schemas import UserForm, UserBase
 from app.database import get_db
-from datetime import timedelta
 from app.services.auth import create_access_token, get_settings
-from app.schemas import OAuth2BaseResponse
+from app.schemas import OAuth2BaseResponse, TokenData
+from app.models import User
+from app.services.auth import get_current_user
 
 auth = APIRouter(prefix="/auth")
 
@@ -45,6 +47,16 @@ def delete_user(username: str, db: Session = Depends(get_db)):
     if is_deleted:
         return JSONResponse(content={"message": f"{username} has been deleted."})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Username cannot be found.")
+
+@auth.get(
+    "/get_active_user",
+    status_code=status.HTTP_200_OK
+)
+def read_user_me(current_user: User = Depends(get_current_user)):
+    return TokenData(
+        current_active_username=current_user.username,
+        current_active_uuid=current_user.id
+    )
 
 @auth.post(
     "/token",

@@ -13,10 +13,7 @@ class Url(Base):
     created_at = Column(DateTime, default=func.now())
     accessed_count = Column(Integer, default=0)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    # Relationship to analytics
     analytics = relationship("UrlAnalytics", back_populates="url", cascade="all, delete-orphan")
-
-    # Relationship to User
     user = relationship("User", back_populates="urls")
 
 
@@ -29,8 +26,6 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
-
-    # Relationship to URLs
     urls = relationship("Url", back_populates="user", cascade="all, delete-orphan")
 
 class UrlAnalytics(Base):
@@ -40,6 +35,4 @@ class UrlAnalytics(Base):
     accessed_at = Column(DateTime, default=func.now())
     ip_address = Column(String)
     user_agent = Column(String)
-
-    # Relationship to url
     url = relationship("Url", back_populates="analytics")
