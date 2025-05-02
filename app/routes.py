@@ -108,10 +108,15 @@ def delete_analytics(
         return JSONResponse({"message": f"Short code {short_code} has been deleted."})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Short code not found.")
 
-@router.get("/get_user_urls", status_code=status.HTTP_200_OK)
+# Added user use endpoints
+@router.get(
+    "/user/all_urls", 
+    status_code=status.HTTP_200_OK,
+    response_model=Optional[List[schemas.UrlView]]
+)
 def get_user_urls(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
-):
+):  
     repo = UrlRepository(db)
-    return repo.get_urls_by_user
+    return repo.get_urls_by_user(user_uuid=current_user.id)

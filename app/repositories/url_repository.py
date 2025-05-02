@@ -50,7 +50,7 @@ class UrlRepository:
         return self.db.query(Url).filter_by(short_code=short_code).first()
     
     def get_urls_by_user(self, user_uuid: UUID) -> Optional[List[Url]]:
-        urls = self.db.query(Url).filter_by(user_uuid).all()
+        urls = self.db.query(Url).filter_by(user_id=user_uuid).all()
         return urls if urls else None
     
     def get_url_analytics(self, short_code: str) -> Optional[List[UrlAnalytics]]:
