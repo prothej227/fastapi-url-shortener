@@ -5,9 +5,9 @@ from app.services.keyword import KeywordBasedStrategy
 from enum import Enum
 
 class StrategyType(Enum):
-    RANDOM = "random",
-    HASH = "hash",
-    CUSTOM = "custom",
+    RANDOM = "random"
+    HASH = "hash"
+    CUSTOM = "custom"
     KEYWORD = "keyword"
 
 STRATEGY_MAP = {

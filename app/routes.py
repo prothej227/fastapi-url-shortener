@@ -35,12 +35,10 @@ def shorten_url(
     repo = UrlRepository(db)
 
     try:
-        strategy_enum = constants.StrategyType(tuple([request.strategy]))
+        strategy_enum = constants.StrategyType(request.strategy)
     except ValueError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid strategy.")
     
-    print(strategy_enum)
-
     selected_strategy: constants.StrategyType = constants.STRATEGY_MAP.get(strategy_enum)
     
     shortener = UrlShortener(repo, selected_strategy)

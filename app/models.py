@@ -11,11 +11,13 @@ class Url(Base):
     original_url = Column(String, unique=True)
     short_code = Column(String, unique=True, index=True)
     created_at = Column(DateTime, default=func.now())
-    accessed_count = Column(Integer, default=0)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     analytics = relationship("UrlAnalytics", back_populates="url", cascade="all, delete-orphan")
     user = relationship("User", back_populates="urls")
 
+    @property
+    def accessed_count(self):
+        return len(self.analytics)
 
 class User(Base):
     __tablename__ = "users"
