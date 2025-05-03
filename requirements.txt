@@ -6,3 +6,4 @@ gunicorn
 uvicorn[standard]
 passlib==1.7.4
 python_jose==3.4.0
+pydantic[email]
